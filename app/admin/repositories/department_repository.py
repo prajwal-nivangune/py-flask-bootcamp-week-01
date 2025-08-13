@@ -1,5 +1,5 @@
 from sqlalchemy.exc import SQLAlchemyError
-from app.models.department import Department
+from app.admin.models.department import Department
 from app.config.db import db
 
 def find_department_by_name(name):
