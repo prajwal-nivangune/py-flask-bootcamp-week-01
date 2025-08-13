@@ -1,6 +1,6 @@
 from app.repositories.user_repository import find_user_by_id, commit_changes, find_user_by_email, create_user
-from app.repositories.department_repository import find_department_by_id
-from app.repositories.doctor_department_repository import find_assignment, create_assignment
+from app.admin.repositories.department_repository import find_department_by_id
+from app.admin.repositories.doctor_department_repository import find_assignment, create_assignment
 
 def promote_user_service(user_id):
     user = find_user_by_id(user_id)

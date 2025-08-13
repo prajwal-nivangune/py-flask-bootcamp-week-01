@@ -1,5 +1,5 @@
 from app.repositories.user_repository import create_user, find_user_by_email
-from app.utils.JWT_utils import generate_token
+from app.common.utils.JWT_utils import generate_token
 
 
 def register_user(data):

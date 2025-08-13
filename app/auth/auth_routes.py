@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy.exc import SQLAlchemyError
-from app.services.auth_service import register_user, login_user
+from app.auth.services.auth_service import register_user, login_user
 
 auth_bp = Blueprint('auth_bp', __name__)
 
