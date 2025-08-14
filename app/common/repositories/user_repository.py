@@ -1,5 +1,5 @@
 from sqlalchemy.exc import SQLAlchemyError
-from app.models.user import User
+from app.common.models import User
 from app.config.db import db
 
 

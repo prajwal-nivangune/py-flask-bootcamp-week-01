@@ -1,4 +1,4 @@
-from app.repositories.user_repository import find_user_by_id, commit_changes, find_user_by_email, create_user
+from app.common.repositories import find_user_by_id, commit_changes, find_user_by_email, create_user
 from app.admin.repositories.department_repository import find_department_by_id
 from app.admin.repositories.doctor_department_repository import find_assignment, create_assignment
 
