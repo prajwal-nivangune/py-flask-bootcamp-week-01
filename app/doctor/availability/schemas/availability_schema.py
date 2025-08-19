@@ -5,4 +5,4 @@ class AvailabilitySchema(Schema):
     doctor_id = fields.Integer(dump_only=True)
     start_time = fields.DateTime(required=True)
     end_time = fields.DateTime(required=True)
-    is_available = fields.Boolean(dump_only=True)
+    is_available = fields.Boolean()

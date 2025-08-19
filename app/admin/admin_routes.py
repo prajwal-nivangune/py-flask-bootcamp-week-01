@@ -1,8 +1,10 @@
 from flask import Blueprint, request ,jsonify
+from flask_jwt_extended import jwt_required
 from sqlalchemy.exc import SQLAlchemyError
 from app.common.utils.decorator import admin_required
 from app.admin.services.admin_service import promote_user_service, onboard_doctor_service, assign_doctor_service
 from app.admin.services.department_service import create_department_service, list_departments_service
+from app.admin.services.appointment_service import get_all_appointments_service
 from app.admin.schemas.department_schema import DepartmentSchema
 from app.admin.schemas.assign_doctor_schema import AssignDoctorSchema
 from app.admin.schemas.onboard_doctor_schema import OnboardDoctorSchema
@@ -72,6 +74,16 @@ def assign_doctor():
         return jsonify(e.messages), 400
     except SQLAlchemyError:
         return jsonify({'message': 'Something went wrong'}), 500
+
+@admin_bp.route("/appointments", methods=["GET"])
+@jwt_required()
+@admin_required
+def get_all_appointments():
+    try:
+        appointments = get_all_appointments_service()
+        return jsonify({"appointments": appointments}), 200
+    except Exception as e:
+        return jsonify({"message": f"Something went wrong: {e}"}), 500
 
 
 
