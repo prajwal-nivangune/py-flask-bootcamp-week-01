@@ -22,3 +22,11 @@ def _commit(instance):
     except SQLAlchemyError:
         db.session.rollback()
         raise
+
+def get_availability_by_id(availability_id):
+    return Availability.query.get(availability_id)
+
+def save_availability(slot):
+    db.session.add(slot)
+    db.session.commit()
+    return slot
