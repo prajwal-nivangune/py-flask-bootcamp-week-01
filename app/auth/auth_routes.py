@@ -1,9 +1,10 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify,current_app
 from sqlalchemy.exc import SQLAlchemyError
 from app.auth.services.auth_service import register_user, login_user
 from marshmallow import ValidationError
 from app.common.schemas.user_schema import UserSchema
 from app.common.schemas.login_schema import LoginSchema
+from flask_jwt_extended import jwt_required, get_jwt
 
 user_schema = UserSchema()
 login_schema = LoginSchema()
@@ -36,3 +37,11 @@ def login():
         return jsonify(e.messages), 400
     except SQLAlchemyError:
         return jsonify({"message": "Something went wrong"}), 500
+
+
+@auth_bp.route("/auth/logout", methods=["POST"])
+@jwt_required()
+def logout():
+    jti = get_jwt()["jti"]
+    current_app.redis.setex(jti, 3600, "revoked")
+    return jsonify({"message": "Logged out successfully"}), 200

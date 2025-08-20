@@ -31,5 +31,6 @@ def login_user(data):
     if not user or not user.check_password(password):
         return {"message": "Invalid password"}, 401
 
-    access_token = generate_token(user.id, user.role)
-    return {"access_token": access_token}, 200
+    access_token, refresh_token = generate_token(user.id, user.role)
+
+    return {"access_token": access_token, "refresh_token" : refresh_token}, 200

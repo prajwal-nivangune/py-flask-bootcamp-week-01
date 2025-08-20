@@ -48,6 +48,8 @@ def update_appointment_status_route(appointment_id):
             allowed = True
         elif current_user.role == "admin":
             allowed = True
+        #TODO
+        #keep it more generic
 
         if not allowed:
             return jsonify({"message": "You are not authorized to update to this status"}), 403
