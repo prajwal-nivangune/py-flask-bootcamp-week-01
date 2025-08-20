@@ -7,3 +7,5 @@ class AppointmentSchema(Schema):
     availability_id = fields.Int(required=True)
     status = fields.Str(validate=validate.OneOf(["booked", "cancelled", "completed"]), dump_only=True)
     created_at = fields.DateTime(dump_only=True)
+    #TODO
+    #enum

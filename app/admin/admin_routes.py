@@ -82,8 +82,5 @@ def get_all_appointments():
     try:
         appointments = get_all_appointments_service()
         return jsonify({"appointments": appointments}), 200
-    except Exception as e:
-        return jsonify({"message": f"Something went wrong: {e}"}), 500
-
-
-
+    except SQLAlchemyError:
+        return jsonify({"message": "Something went wrong"}), 500

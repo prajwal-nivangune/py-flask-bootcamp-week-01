@@ -12,12 +12,19 @@ services:
     ports:
       - "5433:5432"
 
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+
   flask:
     build: .
     ports:
       - "5000:5000"
     depends_on:
       - db
+      - redis
     env_file:
       - .env
 volumes:

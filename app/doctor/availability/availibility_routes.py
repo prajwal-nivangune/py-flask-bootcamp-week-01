@@ -27,9 +27,7 @@ def create_availability():
 def get_availability():
     try:
         current_user = get_current_user()
-        print(current_user)
         response, status = get_availability_slot(current_user)
-        print(response)
         return jsonify(response), status
     except SQLAlchemyError:
         return jsonify({"message": "Something went wrong"}), 500
