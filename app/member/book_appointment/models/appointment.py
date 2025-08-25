@@ -1,5 +1,12 @@
 from app.config.db import db
 from datetime import datetime
+import enum
+
+class AppointmentStatus(enum.Enum):
+    PENDING = "PENDING"
+    BOOKED = "BOOKED"
+    CANCELLED = "CANCELLED"
+    COMPLETED = "COMPLETED"
 
 class Appointment(db.Model):
     __tablename__ = 'appointment'
@@ -8,7 +15,7 @@ class Appointment(db.Model):
     doctor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     member_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     availability_id = db.Column(db.Integer, db.ForeignKey('availability.id'), nullable=False)
-    status = db.Column(db.String(20), nullable=False, default='booked')
+    status = db.Column(db.Enum(AppointmentStatus), nullable=False, default=AppointmentStatus.PENDING)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     doctor = db.relationship('User', foreign_keys=[doctor_id])
