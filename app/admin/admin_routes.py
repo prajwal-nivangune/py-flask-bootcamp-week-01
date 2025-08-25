@@ -1,7 +1,7 @@
 from flask import Blueprint, request ,jsonify
 from flask_jwt_extended import jwt_required
 from sqlalchemy.exc import SQLAlchemyError
-from app.common.utils.decorator import admin_required
+from app.common.utils.decorator import feature_flag_required, role_required
 from app.admin.services.admin_service import promote_user_service, onboard_doctor_service, assign_doctor_service
 from app.admin.services.department_service import create_department_service, list_departments_service
 from app.admin.services.appointment_service import get_all_appointments_service
@@ -17,7 +17,8 @@ assign_doctor_schema = AssignDoctorSchema()
 admin_bp = Blueprint('admin_bp', __name__, url_prefix='/admin')
 
 @admin_bp.route('/promote-user/<int:user_id>', methods=['PUT'])
-@admin_required
+@role_required('admin')
+@feature_flag_required("promote_user")
 def promote_user(user_id):
     """Promote a user to a higher role."""
     try:
@@ -27,7 +28,8 @@ def promote_user(user_id):
         return jsonify({'message': 'Something went wrong'}), 500
 
 @admin_bp.route('/create-department', methods=['POST'])
-@admin_required
+@role_required('admin')
+@feature_flag_required("create_department")
 def create_department():
     """Create a new department."""
     try:
@@ -40,7 +42,8 @@ def create_department():
         return jsonify({'message': 'Something went wrong'}), 500
 
 @admin_bp.route('/departments',methods = ["GET"])
-@admin_required
+@role_required('admin')
+@feature_flag_required("create_department")
 def list_departments():
     """List all departments."""
     try:
@@ -50,7 +53,8 @@ def list_departments():
         return jsonify({'message': 'Something went wrong'}), 500
 
 @admin_bp.route('/doctors', methods = ["POST"])
-@admin_required
+@role_required('admin')
+@feature_flag_required("onboard_doctor")
 def onboard_doctor():
     """Create a new doctor."""
     try:
@@ -63,7 +67,8 @@ def onboard_doctor():
         return jsonify({'message': 'Something went wrong'}), 500
 
 @admin_bp.route('/assign-doctor', methods=['POST'])
-@admin_required
+@role_required('admin')
+@feature_flag_required("assign_doctor")
 def assign_doctor():
     """Assign a doctor to a department."""
     try:
@@ -77,7 +82,8 @@ def assign_doctor():
 
 @admin_bp.route("/appointments", methods=["GET"])
 @jwt_required()
-@admin_required
+@role_required('admin')
+@feature_flag_required("view_appointments")
 def get_all_appointments():
     try:
         appointments = get_all_appointments_service()

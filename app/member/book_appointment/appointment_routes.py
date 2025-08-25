@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy.exc import SQLAlchemyError
 from marshmallow import ValidationError
 from app.common.utils.JWT_utils import get_current_user
-from app.common.utils.decorator import member_required
+from app.common.utils.decorator import role_required, feature_flag_required
 from app.member.book_appointment.schemas.appointment_schema import AppointmentSchema
 from app.member.book_appointment.services.appointment_service import book_appointment_service, update_appointment_status_service
 from app.member.book_appointment.models.appointment import AppointmentStatus
@@ -12,7 +12,8 @@ appointment_bp = Blueprint('appointment', __name__, url_prefix='/appointment')
 appointment_schema = AppointmentSchema()
 
 @appointment_bp.route('/member/book_appointment', methods=['POST'])
-@member_required
+@role_required('member')
+@feature_flag_required("book_appointment")
 def book_appointment():
     try:
         current_user = get_current_user()
@@ -27,6 +28,7 @@ def book_appointment():
 
 @appointment_bp.route('/update-status/<int:appointment_id>', methods=['PUT'])
 @jwt_required()
+@feature_flag_required("update_appointment_status")
 def update_appointment_status_route(appointment_id):
     """
     Update the status of an appointment.
@@ -47,17 +49,13 @@ def update_appointment_status_route(appointment_id):
         except KeyError:
             return jsonify({"message": "Invalid status"}), 400
 
-        allowed = False
-        if current_user.role == "member" and new_status_enum == AppointmentStatus.CANCELLED :
-            allowed = True
-        elif current_user.role == "doctor" and new_status_enum in [AppointmentStatus.CANCELLED, AppointmentStatus.COMPLETED]:
-            allowed = True
-        elif current_user.role == "admin":
-            allowed = True
-        #TODO
-        #keep it more generic
+        ALLOWED_STATUS_BY_ROLE = {
+            "member": [AppointmentStatus.CANCELLED],
+            "doctor": [AppointmentStatus.CANCELLED, AppointmentStatus.COMPLETED],
+            "admin": list(AppointmentStatus)  # Admin can do any status
+        }
 
-        if not allowed:
+        if new_status_enum not in ALLOWED_STATUS_BY_ROLE.get(current_user.role, []):
             return jsonify({"message": "You are not authorized to update to this status"}), 403
 
         response, status_code = update_appointment_status_service(appointment_id, new_status_enum, current_user)
