@@ -6,6 +6,7 @@ from app.common.utils.JWT_utils import get_current_user
 from app.common.utils.decorator import member_required
 from app.member.book_appointment.schemas.appointment_schema import AppointmentSchema
 from app.member.book_appointment.services.appointment_service import book_appointment_service, update_appointment_status_service
+from app.member.book_appointment.models.appointment import AppointmentStatus
 
 appointment_bp = Blueprint('appointment', __name__, url_prefix='/appointment')
 appointment_schema = AppointmentSchema()
@@ -41,10 +42,15 @@ def update_appointment_status_route(appointment_id):
         if not new_status:
             return jsonify({"message": "Status is required"}), 400
 
+        try:
+            new_status_enum = AppointmentStatus[new_status.upper()]
+        except KeyError:
+            return jsonify({"message": "Invalid status"}), 400
+
         allowed = False
-        if current_user.role == "member" and new_status == "cancelled":
+        if current_user.role == "member" and new_status_enum == AppointmentStatus.CANCELLED :
             allowed = True
-        elif current_user.role == "doctor" and new_status in ["cancelled", "completed"]:
+        elif current_user.role == "doctor" and new_status_enum in [AppointmentStatus.CANCELLED, AppointmentStatus.COMPLETED]:
             allowed = True
         elif current_user.role == "admin":
             allowed = True
@@ -54,7 +60,7 @@ def update_appointment_status_route(appointment_id):
         if not allowed:
             return jsonify({"message": "You are not authorized to update to this status"}), 403
 
-        response, status_code = update_appointment_status_service(appointment_id, new_status, current_user)
+        response, status_code = update_appointment_status_service(appointment_id, new_status_enum, current_user)
         return jsonify(response), status_code
 
     except SQLAlchemyError:

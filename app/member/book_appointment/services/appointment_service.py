@@ -1,5 +1,6 @@
 from app.member.book_appointment.repositories.appointment_repo import create_appointment, get_appointment_by_availability, update_appointment_status
 from app.doctor.availability.models.availability import Availability
+from app.member.book_appointment.models.appointment import AppointmentStatus
 
 def book_appointment_service(member_id, data):
     availability_id = data.get('availability_id')
@@ -32,8 +33,6 @@ def update_appointment_status_service(appointment_id, status, current_user):
     """
     Validate and update the appointment status.
     """
-    if status not in ["booked", "cancelled", "completed"]:
-        return {"message": "Invalid status"}, 400
 
     appointment, error = update_appointment_status(appointment_id, status)
     if error:
@@ -51,7 +50,7 @@ def update_appointment_status_service(appointment_id, status, current_user):
             "doctor_id": appointment.doctor_id,
             "member_id": appointment.member_id,
             "availability_id": appointment.availability_id,
-            "status": appointment.status,
+            "status": appointment.status.value,
             "created_at": appointment.created_at.isoformat()
         }
     }, 200

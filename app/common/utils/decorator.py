@@ -55,3 +55,29 @@ def member_required(func):
             return jsonify({"message" : "Unauthorized", "error": str(e)}), 401
         return func(*args, **kwargs)
     return wrapper
+
+
+def role_required(*allowed_roles):
+    """
+    Restrict route access to specific roles.
+    Usage:
+    @jwt_required()
+    @role_required("admin", "doctor")
+    def my_route():
+        ...
+    """
+
+    def wrapper(fn):
+        @wraps(fn)
+        def decorated(*args, **kwargs):
+            claims = get_jwt()
+            user_role = claims.get("role")
+
+            if user_role not in allowed_roles:
+                return jsonify({"error": "Unauthorized. Insufficient role."}), 403
+
+            return fn(*args, **kwargs)
+
+        return decorated
+
+    return wrapper

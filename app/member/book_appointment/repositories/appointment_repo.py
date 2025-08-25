@@ -1,4 +1,4 @@
-from app.member.book_appointment.models.appointment import Appointment
+from app.member.book_appointment.models.appointment import Appointment, AppointmentStatus
 from app.config.db import db
 from app.doctor.availability.models.availability import Availability
 
@@ -13,7 +13,7 @@ def create_appointment(member_id, availability_id):
         doctor_id=slot.doctor_id,
         member_id=member_id,
         availability_id=availability_id,
-        status='booked'
+        status=AppointmentStatus.BOOKED
     )
 
     slot.is_available = False
@@ -35,6 +35,7 @@ def get_appointments_by_doctor(doctor_id):
 def update_appointment_status(appointment_id, status):
     """
     Update the status of an existing appointment.
+    `status` is expected to be an AppointmentStatus enum.
     """
     appointment = Appointment.query.get(appointment_id)
     if not appointment:
@@ -44,3 +45,8 @@ def update_appointment_status(appointment_id, status):
     db.session.commit()
     return appointment, None
 
+def get_appointment_by_id(appointment_id):
+    """
+    Fetch a single appointment by its ID.
+    """
+    return Appointment.query.get(appointment_id)
