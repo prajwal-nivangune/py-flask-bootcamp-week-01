@@ -1,21 +1,20 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy.exc import SQLAlchemyError
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app.common.utils.decorator import role_required
+from app.common.utils.decorator import role_required, feature_flag_required
 from app.reimbursement.services.reimbursement_services import ReimbursementService
 from app.reimbursement.schemas.reimbursement_schemas import (
     ReimbursementCreateSchema,
     ReimbursementResponseSchema,
 )
 
-# Blueprint for reimbursement
 reimbursement_bp = Blueprint("reimbursement", __name__, url_prefix="/reimbursement")
 
 
-# Member submits claim
 @reimbursement_bp.route("/submit", methods=["POST"])
 @jwt_required()
 @role_required("member")
+@feature_flag_required("submit_claim")
 def submit_claim():
     try:
         data = request.get_json() or {}
@@ -44,6 +43,7 @@ def submit_claim():
 @reimbursement_bp.route("/review/<int:claim_id>", methods=["PUT"])
 @jwt_required()
 @role_required("admin")
+@feature_flag_required("review_claim")
 def review_claim(claim_id):
     try:
         data = request.get_json() or {}
@@ -64,6 +64,7 @@ def review_claim(claim_id):
 @reimbursement_bp.route("/get_all_reimbursement", methods=["GET"])
 @jwt_required()
 @role_required("admin")
+@feature_flag_required("view_all_claims")
 def get_all_claims():
     claims = ReimbursementService.get_claims()
     return ReimbursementResponseSchema(many=True).dump(claims), 200
