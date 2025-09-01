@@ -1,6 +1,7 @@
-from app.common.repositories import find_user_by_id, commit_changes, find_user_by_email, create_user
 from app.admin.repositories.department_repository import find_department_by_id
-from app.admin.repositories.doctor_department_repository import find_assignment, create_assignment
+from app.admin.repositories.doctor_department_repository import create_assignment, find_assignment
+from app.common.repositories import commit_changes, create_user, find_user_by_email, find_user_by_id
+
 
 def promote_user_service(user_id):
     user = find_user_by_id(user_id)
@@ -8,13 +9,14 @@ def promote_user_service(user_id):
     if not user:
         return {"message": "User not found"}, 404
 
-    if user.role == 'admin':
+    if user.role == "admin":
         return {"message": "User is already an admin"}, 200
 
-    user.role = 'admin'
+    user.role = "admin"
     commit_changes()
 
     return {"message": "User promoted to admin"}, 200
+
 
 def onboard_doctor_service(data):
     name = data.get("name")
@@ -27,6 +29,7 @@ def onboard_doctor_service(data):
 
     create_user(name, email, password, role="doctor")
     return {"message": "Doctor onboarded"}, 201
+
 
 def assign_doctor_service(data):
     doctor_id = data.get("doctor_id")
@@ -50,7 +53,3 @@ def assign_doctor_service(data):
 
     create_assignment(doctor_id, department_id)
     return {"message": "Doctor assigned to the department"}, 201
-
-
-
-

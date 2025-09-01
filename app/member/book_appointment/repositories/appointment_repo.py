@@ -1,6 +1,7 @@
-from app.member.book_appointment.models.appointment import Appointment, AppointmentStatus
 from app.config.db import db
 from app.doctor.availability.models.availability import Availability
+from app.member.book_appointment.models.appointment import Appointment, AppointmentStatus
+
 
 def create_appointment(member_id, availability_id):
     """
@@ -13,7 +14,7 @@ def create_appointment(member_id, availability_id):
         doctor_id=slot.doctor_id,
         member_id=member_id,
         availability_id=availability_id,
-        status=AppointmentStatus.BOOKED
+        status=AppointmentStatus.BOOKED,
     )
 
     slot.is_available = False
@@ -23,14 +24,18 @@ def create_appointment(member_id, availability_id):
 
     return appointment
 
+
 def get_appointment_by_availability(availability_id):
     return Appointment.query.filter_by(availability_id=availability_id).first()
+
 
 def get_all_appointments():
     return Appointment.query.order_by(Appointment.id.desc()).all()
 
+
 def get_appointments_by_doctor(doctor_id):
     return Appointment.query.filter_by(doctor_id=doctor_id).all()
+
 
 def update_appointment_status(appointment_id, status):
     """
@@ -44,6 +49,7 @@ def update_appointment_status(appointment_id, status):
     appointment.status = status
     db.session.commit()
     return appointment, None
+
 
 def get_appointment_by_id(appointment_id):
     """

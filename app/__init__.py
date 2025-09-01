@@ -1,15 +1,18 @@
+import os
+
 from flask import Flask
 from flask_jwt_extended import JWTManager
-from app.config.db import db
-from app.config.config import Config
-from app.auth.auth_routes import auth_bp
+from flask_migrate import Migrate
+from redis import Redis
+
 from app.admin.admin_routes import admin_bp
+from app.auth.auth_routes import auth_bp
+from app.config.config import Config
+from app.config.db import db
 from app.doctor.availability.availibility_routes import availability_bp
 from app.member.book_appointment.appointment_routes import appointment_bp
 from app.reimbursement.reimbursement_routes import reimbursement_bp
-from flask_migrate import Migrate
-from redis import Redis
-import os
+
 
 def create_app():
     app = Flask(__name__)
@@ -20,7 +23,7 @@ def create_app():
         host=os.getenv("REDIS_HOST", "localhost"),
         port=int(os.getenv("REDIS_PORT", 6379)),
         db=0,
-        decode_responses=True
+        decode_responses=True,
     )
 
     @jwt.token_in_blocklist_loader

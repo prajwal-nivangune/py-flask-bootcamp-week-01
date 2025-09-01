@@ -1,9 +1,13 @@
-from app.member.book_appointment.repositories.appointment_repo import create_appointment, get_appointment_by_availability, update_appointment_status
 from app.doctor.availability.models.availability import Availability
-from app.member.book_appointment.models.appointment import AppointmentStatus
+from app.member.book_appointment.repositories.appointment_repo import (
+    create_appointment,
+    get_appointment_by_availability,
+    update_appointment_status,
+)
+
 
 def book_appointment_service(member_id, data):
-    availability_id = data.get('availability_id')
+    availability_id = data.get("availability_id")
     if not availability_id:
         return {"message": "availability_id is required"}, 400
 
@@ -24,10 +28,11 @@ def book_appointment_service(member_id, data):
             "doctor_id": appointment.doctor_id,
             "member_id": appointment.member_id,
             "availability_id": appointment.availability_id,
-            "status": appointment.status,
-            "created_at": appointment.created_at.isoformat()
-        }
+            "status": appointment.status.value,
+            "created_at": appointment.created_at.isoformat(),
+        },
     }, 201
+
 
 def update_appointment_status_service(appointment_id, status, current_user):
     """
@@ -51,6 +56,6 @@ def update_appointment_status_service(appointment_id, status, current_user):
             "member_id": appointment.member_id,
             "availability_id": appointment.availability_id,
             "status": appointment.status.value,
-            "created_at": appointment.created_at.isoformat()
-        }
+            "created_at": appointment.created_at.isoformat(),
+        },
     }, 200

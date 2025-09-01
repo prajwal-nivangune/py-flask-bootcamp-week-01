@@ -3,6 +3,7 @@ name : Flask RBAC CI
 on:
   push:
     branches: [ main ]
+  pull_request:
 
 jobs:
   build:
@@ -35,3 +36,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t flask-rbac-app .
+
+      - name: Run pre-commit hooks
+        run: |
+          poetry run pre-commit run --all-files
