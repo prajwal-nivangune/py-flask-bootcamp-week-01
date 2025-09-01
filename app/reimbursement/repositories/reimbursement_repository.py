@@ -1,5 +1,6 @@
-from app.reimbursement.models import Reimbursement, ClaimStatus
 from app import db
+from app.reimbursement.models import ClaimStatus, Reimbursement
+
 
 class ReimbursementRepo:
     @staticmethod
@@ -8,7 +9,7 @@ class ReimbursementRepo:
             member_id=member_id,
             appointment_id=appointment_id,
             amount=amount,
-            description=description
+            description=description,
         )
         db.session.add(claim)
         db.session.commit()

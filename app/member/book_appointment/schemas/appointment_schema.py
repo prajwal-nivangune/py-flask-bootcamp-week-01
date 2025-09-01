@@ -1,6 +1,8 @@
 from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
+
 from app.member.book_appointment.models.appointment import AppointmentStatus
+
 
 class AppointmentSchema(Schema):
     id = fields.Int(dump_only=True)

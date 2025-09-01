@@ -1,18 +1,23 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
-from sqlalchemy.exc import SQLAlchemyError
 from marshmallow import ValidationError
-from app.common.utils.JWT_utils import get_current_user
-from app.common.utils.decorator import role_required, feature_flag_required
-from app.member.book_appointment.schemas.appointment_schema import AppointmentSchema
-from app.member.book_appointment.services.appointment_service import book_appointment_service, update_appointment_status_service
-from app.member.book_appointment.models.appointment import AppointmentStatus
+from sqlalchemy.exc import SQLAlchemyError
 
-appointment_bp = Blueprint('appointment', __name__, url_prefix='/appointment')
+from app.common.utils.decorator import feature_flag_required, role_required
+from app.common.utils.JWT_utils import get_current_user
+from app.member.book_appointment.models.appointment import AppointmentStatus
+from app.member.book_appointment.schemas.appointment_schema import AppointmentSchema
+from app.member.book_appointment.services.appointment_service import (
+    book_appointment_service,
+    update_appointment_status_service,
+)
+
+appointment_bp = Blueprint("appointment", __name__, url_prefix="/appointment")
 appointment_schema = AppointmentSchema()
 
-@appointment_bp.route('/member/book_appointment', methods=['POST'])
-@role_required('member')
+
+@appointment_bp.route("/member/book_appointment", methods=["POST"])
+@role_required("member")
 @feature_flag_required("book_appointment")
 def book_appointment():
     try:
@@ -23,10 +28,10 @@ def book_appointment():
     except ValidationError as e:
         return jsonify(e.messages), 400
     except SQLAlchemyError:
-        return jsonify({'message': 'Something went wrong'}), 500
+        return jsonify({"message": "Something went wrong"}), 500
 
 
-@appointment_bp.route('/update-status/<int:appointment_id>', methods=['PUT'])
+@appointment_bp.route("/update-status/<int:appointment_id>", methods=["PUT"])
 @jwt_required()
 @feature_flag_required("update_appointment_status")
 def update_appointment_status_route(appointment_id):
@@ -40,7 +45,7 @@ def update_appointment_status_route(appointment_id):
     try:
         current_user = get_current_user()
         data = request.get_json()
-        new_status = data.get('status')
+        new_status = data.get("status")
         if not new_status:
             return jsonify({"message": "Status is required"}), 400
 
@@ -52,17 +57,16 @@ def update_appointment_status_route(appointment_id):
         ALLOWED_STATUS_BY_ROLE = {
             "member": [AppointmentStatus.CANCELLED],
             "doctor": [AppointmentStatus.CANCELLED, AppointmentStatus.COMPLETED],
-            "admin": list(AppointmentStatus)  # Admin can do any status
+            "admin": list(AppointmentStatus),  # Admin can do any status
         }
 
         if new_status_enum not in ALLOWED_STATUS_BY_ROLE.get(current_user.role, []):
             return jsonify({"message": "You are not authorized to update to this status"}), 403
 
-        response, status_code = update_appointment_status_service(appointment_id, new_status_enum, current_user)
+        response, status_code = update_appointment_status_service(
+            appointment_id, new_status_enum, current_user
+        )
         return jsonify(response), status_code
 
     except SQLAlchemyError:
         return jsonify({"message": "Something went wrong"}), 500
-
-
-

@@ -1,16 +1,22 @@
-from flask import Blueprint, request, jsonify
-from sqlalchemy.exc import SQLAlchemyError
+from flask import Blueprint, jsonify, request
 from marshmallow import ValidationError
+from sqlalchemy.exc import SQLAlchemyError
+
 from app.common.utils.decorator import feature_flag_required, role_required
 from app.common.utils.JWT_utils import get_current_user
 from app.doctor.availability.schemas.availability_schema import AvailabilitySchema
-from app.doctor.availability.services.availability_service import create_availability_slot, get_availability_slot, update_availability_service
+from app.doctor.availability.services.availability_service import (
+    create_availability_slot,
+    get_availability_slot,
+    update_availability_service,
+)
 
-availability_bp = Blueprint('availability_bp', __name__)
+availability_bp = Blueprint("availability_bp", __name__)
 availability_schema = AvailabilitySchema()
 
-@availability_bp.route('/doctor/create-availability', methods=['POST'])
-@role_required('doctor')
+
+@availability_bp.route("/doctor/create-availability", methods=["POST"])
+@role_required("doctor")
 @feature_flag_required("create_availability")
 def create_availability():
     try:
@@ -21,10 +27,11 @@ def create_availability():
     except ValidationError as e:
         return jsonify(e.messages), 400
     except SQLAlchemyError:
-        return jsonify({'message': 'Something went wrong'}), 500
+        return jsonify({"message": "Something went wrong"}), 500
 
-@availability_bp.route('/doctor/get-availability', methods=['GET'])
-@role_required('doctor')
+
+@availability_bp.route("/doctor/get-availability", methods=["GET"])
+@role_required("doctor")
 @feature_flag_required("get_availability")
 def get_availability():
     try:
@@ -34,8 +41,9 @@ def get_availability():
     except SQLAlchemyError:
         return jsonify({"message": "Something went wrong"}), 500
 
-@availability_bp.route('/doctor/update-availability/<int:availability_id>', methods=['PUT'])
-@role_required('doctor')
+
+@availability_bp.route("/doctor/update-availability/<int:availability_id>", methods=["PUT"])
+@role_required("doctor")
 @feature_flag_required("update_availability")
 def update_availability(availability_id):
     try:

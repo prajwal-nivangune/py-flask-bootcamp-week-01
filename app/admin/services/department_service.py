@@ -1,4 +1,9 @@
-from app.admin.repositories.department_repository import find_department_by_name, create_department_record, get_all_departments
+from app.admin.repositories.department_repository import (
+    create_department_record,
+    find_department_by_name,
+    get_all_departments,
+)
+
 
 def create_department_service(data):
     name = data.get("name")
@@ -10,6 +15,7 @@ def create_department_service(data):
 
     create_department_record(name)
     return {"message": "Department created"}, 201
+
 
 def list_departments_service():
     departments = get_all_departments()

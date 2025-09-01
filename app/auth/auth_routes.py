@@ -1,18 +1,20 @@
-from flask import Blueprint, request, jsonify,current_app
-from sqlalchemy.exc import SQLAlchemyError
-from app.auth.services.auth_service import register_user, login_user
+from flask import Blueprint, current_app, jsonify, request
+from flask_jwt_extended import get_jwt, jwt_required
 from marshmallow import ValidationError
-from app.common.schemas.user_schema import UserSchema
+from sqlalchemy.exc import SQLAlchemyError
+
+from app.auth.services.auth_service import login_user, register_user
 from app.common.schemas.login_schema import LoginSchema
-from flask_jwt_extended import jwt_required, get_jwt
+from app.common.schemas.user_schema import UserSchema
 from app.common.utils.decorator import feature_flag_required
 
 user_schema = UserSchema()
 login_schema = LoginSchema()
 
-auth_bp = Blueprint('auth_bp', __name__)
+auth_bp = Blueprint("auth_bp", __name__)
 
-@auth_bp.route("/auth/register", methods = ["POST"])
+
+@auth_bp.route("/auth/register", methods=["POST"])
 @feature_flag_required("registration")
 def register():
     """
@@ -29,7 +31,8 @@ def register():
     except SQLAlchemyError:
         return jsonify({"message": "Something went wrong"}), 500
 
-@auth_bp.route("/auth/login", methods = ["POST"])
+
+@auth_bp.route("/auth/login", methods=["POST"])
 @feature_flag_required("login")
 def login():
     try:

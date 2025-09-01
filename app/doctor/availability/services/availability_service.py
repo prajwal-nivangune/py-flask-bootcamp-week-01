@@ -1,17 +1,25 @@
-from app.doctor.availability.repositories.availability_repository import create_slot,get_slots_by_doctor, get_availability_by_id, save_availability
+from app.doctor.availability.repositories.availability_repository import (
+    create_slot,
+    get_availability_by_id,
+    get_slots_by_doctor,
+    save_availability,
+)
+
 
 def create_availability_slot(current_user, data):
-    if current_user.role != 'doctor':
-        return {"message" : "Only doctors can create availability"}, 403
+    if current_user.role != "doctor":
+        return {"message": "Only doctors can create availability"}, 403
     start_time = data.get("start_time")
     end_time = data.get("end_time")
 
     slot = create_slot(current_user.id, start_time, end_time)
     return {"message": "Availability created", "id": slot.id}, 201
 
+
 def get_availability_slot(current_user):
     slots = get_slots_by_doctor(current_user.id)
     return [s.serialize() for s in slots], 200
+
 
 def update_availability_service(current_user, availability_id, data):
     slot = get_availability_by_id(availability_id)
@@ -30,7 +38,4 @@ def update_availability_service(current_user, availability_id, data):
 
     save_availability(slot)
 
-    return {
-        "message": "Availability updated successfully",
-        "availability": slot.serialize()
-    }, 200
+    return {"message": "Availability updated successfully", "availability": slot.serialize()}, 200

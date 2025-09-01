@@ -29,6 +29,44 @@ flask-migrate = "^4.1.0"
 redis = "^6.4.0"
 marshmallow-enum = "^1.5.1"
 
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^4.3.0"
+black = "^25.1.0"
+isort = "^6.0.1"
+flake8 = "^7.3.0"
+mypy = "^1.17.1"
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+exclude = '''
+/(
+  \.venv
+  | build
+  | dist
+  | migrations
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_output = 3
+include_trailing_comma = true
+skip = ["migrations", ".venv", "build", "dist"]
+
+[tool.flake8]
+max-line-length = 100
+extend-ignore = ["E203", "W503"]
+exclude = ["migrations", ".venv", "build", "dist"]
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+disallow_untyped_defs = false
+exclude = 'migrations|.venv|build|dist'
+
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

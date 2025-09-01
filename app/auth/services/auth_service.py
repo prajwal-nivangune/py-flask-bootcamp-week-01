@@ -22,6 +22,7 @@ def register_user(data):
     create_user(name, email, password, role)
     return {"message": "User created successfully"}, 201
 
+
 def login_user(data):
     email = data.get("email").strip().lower()
     password = data.get("password")
@@ -33,4 +34,4 @@ def login_user(data):
 
     access_token, refresh_token = generate_token(user.id, user.role)
 
-    return {"access_token": access_token, "refresh_token" : refresh_token}, 200
+    return {"access_token": access_token, "refresh_token": refresh_token}, 200
